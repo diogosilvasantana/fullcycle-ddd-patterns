@@ -1,0 +1,40 @@
+./
+├── domain
+│   ├── entities
+│   │   ├── address.ts
+│   │   ├── customer.spec.ts
+│   │   ├── customer.ts
+│   │   ├── order.spec.ts
+│   │   ├── order.ts
+│   │   ├── order_item.ts
+│   │   ├── product.spec.ts
+│   │   └── product.ts
+│   ├── repositories
+│   │   ├── customer-repository.interface.ts
+│   │   ├── orders-repository.interface.ts
+│   │   ├── product-repository.interface.ts
+│   │   └── repository.interface.ts
+│   └── services
+│       ├── order.service.spec.ts
+│       ├── order.service.ts
+│       ├── product.service.spec.ts
+│       └── product.service.ts
+├── estrutura.txt
+├── infra
+│   ├── db
+│   │   └── sequelize
+│   │       └── model
+│   │           ├── customer.model.ts
+│   │           ├── order-item.model.ts
+│   │           ├── order.model.ts
+│   │           └── product.model.ts
+│   └── repositories
+│       ├── customer.repository.spec.ts
+│       ├── customer.repository.ts
+│       ├── order.repository.spec.ts
+│       ├── order.repository.ts
+│       ├── product.repository.spec.ts
+│       └── product.repository.ts
+└── main.ts
+
+10 directories, 28 files
