@@ -1,6 +1,7 @@
 import CustomerCreatedEvent from "../customer/customer-created.event";
+import SendConsoleLog1Handler from "../customer/handler/send-console-log1.handler";
+import SendConsoleLog2Handler from "../customer/handler/send-console-log2.handler";
 import SendEmailWhenCustomerAddressAlreadyHandler from "../customer/handler/send-email-when-customer-address-already.handler";
-import SendEmailWhenCustomerIsCreatedHandler from "../customer/handler/send-email-when-customer-is-created.handler";
 import SendEmailWhenProductIsCreatedHandler from "../product/handler/send-email-when-product-is-created.handler";
 import ProductCreatedEvent from "../product/product-created.event";
 import EventDispatcher from "./event-dispatcher";
@@ -45,7 +46,7 @@ describe("Domain events tests", () => {
 
   it("should register a customer an event handler", () => {
     const eventDispatcher = new EventDispatcher();
-    const eventHandler = new SendEmailWhenCustomerIsCreatedHandler();
+    const eventHandler = new SendConsoleLog1Handler();
 
     eventDispatcher.register("CustomerCreatedEvent", eventHandler);
 
@@ -62,7 +63,7 @@ describe("Domain events tests", () => {
 
   it("should unregister a customer an event handler", () => {
     const eventDispatcher = new EventDispatcher();
-    const eventHandler = new SendEmailWhenCustomerIsCreatedHandler();
+    const eventHandler = new SendConsoleLog1Handler();
 
     eventDispatcher.register("CustomerCreatedEvent", eventHandler);
 
@@ -114,36 +115,42 @@ describe("Domain events tests", () => {
       price: 10.0,
     });
 
-    // Quando o notify for executado, o SendEmailWhenProductIsCreatedHandler.handle() deve ser chamado
     eventDispatcher.notify(productCreatedEvent);
 
     expect(spyEventProductHandler).toHaveBeenCalled();
 
-    const eventCustomerHandler1 = new SendEmailWhenCustomerIsCreatedHandler();
+    const eventCustomerHandler1 = new SendConsoleLog1Handler();
     const spyEventCustomerHandler1 = jest.spyOn(
       eventCustomerHandler1,
       "handle"
     );
 
-    const eventCustomerHandler2 = new SendEmailWhenCustomerIsCreatedHandler();
+    eventDispatcher.register("CustomerCreatedEvent", eventCustomerHandler1);
+
+    expect(
+      eventDispatcher.getEventHandlers["CustomerCreatedEvent"][0]
+    ).toMatchObject(eventCustomerHandler1);
+
+    let customerCreatedEvent = new CustomerCreatedEvent({
+      name: "Customer 1",
+      email: "customer1@test",
+    });
+
+    const eventCustomerHandler2 = new SendConsoleLog2Handler();
     const spyEventCustomerHandler2 = jest.spyOn(
       eventCustomerHandler2,
       "handle"
     );
 
-    eventDispatcher.register("CustomerCreatedEvent", eventCustomerHandler1);
     eventDispatcher.register("CustomerCreatedEvent", eventCustomerHandler2);
 
-    expect(
-      eventDispatcher.getEventHandlers["CustomerCreatedEvent"][0]
-    ).toMatchObject(eventCustomerHandler1);
     expect(
       eventDispatcher.getEventHandlers["CustomerCreatedEvent"][1]
     ).toMatchObject(eventCustomerHandler2);
 
-    let customerCreatedEvent = new CustomerCreatedEvent({
-      name: "Customer 1",
-      email: "customer1@test",
+    customerCreatedEvent = new CustomerCreatedEvent({
+      name: "Customer 2",
+      email: "customer2@test",
     });
 
     eventDispatcher.notify(customerCreatedEvent);
@@ -155,10 +162,17 @@ describe("Domain events tests", () => {
   it("should already a address an customer", () => {
     const eventDispatcher = new EventDispatcher();
 
-    const eventCustomerAddressAlreadyHandler = new SendEmailWhenCustomerAddressAlreadyHandler();
-    const spyEventCustomerAddressAlreadyHandler = jest.spyOn(eventCustomerAddressAlreadyHandler, "handle");
+    const eventCustomerAddressAlreadyHandler =
+      new SendEmailWhenCustomerAddressAlreadyHandler();
+    const spyEventCustomerAddressAlreadyHandler = jest.spyOn(
+      eventCustomerAddressAlreadyHandler,
+      "handle"
+    );
 
-    eventDispatcher.register("CustomerCreatedEvent", eventCustomerAddressAlreadyHandler);
+    eventDispatcher.register(
+      "CustomerCreatedEvent",
+      eventCustomerAddressAlreadyHandler
+    );
 
     expect(
       eventDispatcher.getEventHandlers["CustomerCreatedEvent"][0]
@@ -167,7 +181,7 @@ describe("Domain events tests", () => {
     const customerAddressAlreadyEvent = new CustomerCreatedEvent({
       id: "1",
       name: "Customer 1",
-      address: "Rua 1, 123, Bairro 1, Cidade 1, Estado 1, CEP 1"
+      address: "Rua 1, 123, Bairro 1, Cidade 1, Estado 1, CEP 1",
     });
 
     eventDispatcher.notify(customerAddressAlreadyEvent);
