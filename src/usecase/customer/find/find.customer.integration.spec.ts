@@ -1,4 +1,3 @@
-import { OutputFindCustomerDto } from './find.customer.dto';
 import { Sequelize } from "sequelize-typescript";
 import CustomerModel from "../../../infrastructure/customer/repository/sequelize/customer.model";
 import CustomerRepository from "../../../infrastructure/customer/repository/sequelize/customer.repository";
